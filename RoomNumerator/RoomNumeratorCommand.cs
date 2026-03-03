@@ -116,15 +116,18 @@ namespace RoomNumerator
         {
             ICollection<ElementId> selectedIds = sel.GetElementIds();
             List<Room> tempRoomsList = new List<Room>();
-            foreach (ElementId roomId in selectedIds)
+
+            foreach (ElementId id in selectedIds)
             {
-                if (doc.GetElement(roomId) is Room
-                    && null != doc.GetElement(roomId).Category
-                    && doc.GetElement(roomId).Category.Id.IntegerValue.Equals((int)BuiltInCategory.OST_Rooms))
+                Element e = doc.GetElement(id);
+                if (e is Room room &&
+                    e.Category != null &&
+                    e.Category.Id == new ElementId(BuiltInCategory.OST_Rooms))
                 {
-                    tempRoomsList.Add(doc.GetElement(roomId) as Room);
+                    tempRoomsList.Add(room);
                 }
             }
+
             return tempRoomsList;
         }
         private static XYZ GetRoomCenter(Room room)
