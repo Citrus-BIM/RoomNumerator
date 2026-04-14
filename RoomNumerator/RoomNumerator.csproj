@@ -1,9 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup Condition="'$(Configuration)' == ''">
+		<Configuration>R2026</Configuration>
+	</PropertyGroup>
 	<PropertyGroup>
 		<AssemblyName>RoomNumerator</AssemblyName>
 		<RootNamespace>RoomNumerator</RootNamespace>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+		<PackageReference Include="System.Resources.Extensions" Version="8.0.0" IncludeAssets="build;compile" PrivateAssets="all" />
+	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\citrus.ico" />
 	</ItemGroup>

@@ -18,15 +18,17 @@ namespace RoomNumerator
         {
             try
             {
-                _ = GetPluginStartInfo();
+                GetPluginStartInfo().GetAwaiter().GetResult();
             }
-            catch { }
+            catch
+            {
+                // телеметрия не должна прерывать команду
+            }
 
             Document doc = commandData.Application.ActiveUIDocument.Document;
             Selection sel = commandData.Application.ActiveUIDocument.Selection;
 
-            List<Room> roomList = new List<Room>();
-            roomList = GetRoomsFromCurrentSelection(doc, sel);
+            List<Room> roomList = GetRoomsFromCurrentSelection(doc, sel);
 
             if (roomList.Count == 0)
             {
@@ -58,8 +60,8 @@ namespace RoomNumerator
             string numberPrefix = roomNumeratorWPF.NumberPrefix;
             string startFrom = roomNumeratorWPF.StartFrom;
             int formatLength = startFrom.Length;
-            bool tryChech = int.TryParse(startFrom, out int cnt);
-            if (!tryChech) cnt = 1;
+            bool tryCheck = int.TryParse(startFrom, out int cnt);
+            if (!tryCheck) cnt = 1;
 
             string selectedNumberingDirection = roomNumeratorWPF.SelectedNumberingDirection;
             switch (selectedNumberingDirection)
@@ -132,20 +134,28 @@ namespace RoomNumerator
         }
         private static XYZ GetRoomCenter(Room room)
         {
-            XYZ tmpXYZ = null;
-            tmpXYZ = (room.get_BoundingBox(null).Max + room.get_BoundingBox(null).Min) / 2;
-            return tmpXYZ;
+            BoundingBoxXYZ? bbox = room.get_BoundingBox(null);
+            if (bbox != null)
+                return (bbox.Max + bbox.Min) * 0.5;
+            if (room.Location is LocationPoint lp)
+                return lp.Point;
+            return XYZ.Zero;
         }
         private static async Task GetPluginStartInfo()
         {
-            // Получаем сборку, в которой выполняется текущий код
             Assembly thisAssembly = Assembly.GetExecutingAssembly();
             string assemblyName = "RoomNumerator";
             string assemblyNameRus = "Нумератор помещений";
-            string assemblyFolderPath = Path.GetDirectoryName(thisAssembly.Location);
+            string? assemblyFolderPath = Path.GetDirectoryName(thisAssembly.Location);
+            if (string.IsNullOrEmpty(assemblyFolderPath))
+                return;
 
-            int lastBackslashIndex = assemblyFolderPath.LastIndexOf("\\");
+            int lastBackslashIndex = assemblyFolderPath.LastIndexOf('\\');
+            if (lastBackslashIndex < 0)
+                return;
             string dllPath = assemblyFolderPath.Substring(0, lastBackslashIndex + 1) + "PluginInfoCollector\\PluginInfoCollector.dll";
+            if (!File.Exists(dllPath))
+                return;
 
             Assembly assembly = Assembly.LoadFrom(dllPath);
             Type type = assembly.GetType("PluginInfoCollector.InfoCollector");

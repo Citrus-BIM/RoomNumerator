@@ -11,13 +11,14 @@
         MaxWidth="400" MaxHeight="320"
         WindowStyle="SingleBorderWindow"
         ResizeMode="NoResize"
-        Icon="pack://application:,,,/RoomNumerator;component/Resources/citrus.ico"
+        Icon="Resources/citrus.ico"
         WindowStartupLocation="CenterScreen"
         KeyDown="RoomNumeratorWPF_KeyDown"
 
         FontFamily="{DynamicResource BaseFont}"
         FontSize="{DynamicResource FontSizeBase}"
         Foreground="{DynamicResource TextBrush}"
+        Background="{DynamicResource PageBgBrush}"
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto"
         TextOptions.TextHintingMode="Fixed"
@@ -25,12 +26,10 @@
         SnapsToDevicePixels="True"
         Language="ru-RU">
 
-    <!-- Citrus theme -->
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- замени assembly/путь при необходимости -->
-                <ResourceDictionary Source="/RoomNumerator;component/CitrusTheme/CitrusTheme.xaml"/>
+                <ResourceDictionary Source="CitrusTheme/CitrusTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
